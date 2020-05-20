@@ -64,11 +64,10 @@ function print_usage {
   echo -e "  --autopilot-redundancy-zone-tag\t\t(Enterprise-only) This controls the -node-meta key to use when Autopilot is separating servers into zones for redundancy. Only one server in each zone can be a voting member at one time. If left blank, this feature will be disabled. Defaults to $DEFAULT_AUTOPILOT_REDUNDANCY_ZONE_TAG. Optional."
   echo -e "  --autopilot-disable-upgrade-migration\t(Enterprise-only) If this flag is set, this will disable Autopilot's upgrade migration strategy in Consul Enterprise of waiting until enough newer-versioned servers have been added to the cluster before promoting any of them to voters. Defaults to $DEFAULT_AUTOPILOT_DISABLE_UPGRADE_MIGRATION. Optional."
   echo -e "  --autopilot-upgrade-version-tag\t\t(Enterprise-only) That tag to be used to override the version information used during a migration. Optional."
-  echo
   echo "Options for Consul Connect:"
-  echo
   echo -e "  --enable-connect\tIf set, turn on Consul Connect(only Server Mode)"
-  echo
+  echo "Options for Consul Connect:"
+  echo -e "  --enable-grpc\tIf set, configure grpc port(only Server Mode)"
   echo
   echo "Example:"
   echo
@@ -323,6 +322,17 @@ EOF
 EOF
 )
   fi
+  
+  local connect_configuration=""
+  if [[ "$enable_grpc" == "true" && "$server" == "true" ]]; then
+    log_info "Creating grpc configuration"
+    grpc_configuration=$(cat <<EOF
+ports {
+  "grpc" = 8502
+},
+EOF
+)
+  fi
 
   log_info "Creating default Consul configuration"
   local default_config_json=$(cat <<EOF
@@ -340,6 +350,7 @@ EOF
   $rpc_encryption_configuration
   $autopilot_configuration
   $connect_configuration
+  $grpc_configuration
   "ui": $ui
 }
 EOF
@@ -549,6 +560,9 @@ function run {
       --enable-connect)
         enable_connect="true"
         ;;
+      --enable-grpc)
+      enable_grpc="true"
+      ;;
       --gossip-encryption-key)
         assert_not_empty "$key" "$2"
         gossip_encryption_key="$2"
