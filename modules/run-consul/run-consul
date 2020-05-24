@@ -327,8 +327,8 @@ EOF
   if [[ "$enable_grpc" == "true" && "$server" == "true" ]]; then
     log_info "Creating grpc configuration"
     grpc_configuration=$(cat <<EOF
-ports {
-  "grpc" = 8502
+"ports": {
+  "grpc": 8502
 },
 EOF
 )
