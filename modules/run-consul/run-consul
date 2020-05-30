@@ -234,6 +234,7 @@ function generate_consul_config {
   local -r redundancy_zone_tag="${17}"
   local -r disable_upgrade_migration="${18}"
   local -r upgrade_version_tag=${19}
+  local -r enable_acl=${20}
   local -r config_path="$config_dir/$CONSUL_CONFIG_FILE"
 
   shift 19
@@ -333,6 +334,11 @@ EOF
 EOF
 )
   fi
+  
+  local acl_configuration=""
+  if [[ "$enable_acl" == "true" ]]; then
+    acl_configuration=$(cat "/opt/nvc/acl-config.hcl")
+  fi
 
   log_info "Creating default Consul configuration"
   local default_config_json=$(cat <<EOF
@@ -351,6 +357,7 @@ EOF
   $autopilot_configuration
   $connect_configuration
   $grpc_configuration
+  $acl_configuration
   "ui": $ui
 }
 EOF
@@ -451,6 +458,7 @@ function run {
   local enable_gossip_encryption="false"
   local gossip_encryption_key=""
   local enable_rpc_encryption="false"
+  local enable_acl="false"
   local ca_path=""
   local cert_file_path=""
   local key_file_path=""
@@ -559,6 +567,9 @@ function run {
         ;;
       --enable-connect)
         enable_connect="true"
+        ;;
+      --enable-acl)
+        enable_acl="true"
         ;;
       --enable-grpc)
       enable_grpc="true"
@@ -676,6 +687,7 @@ function run {
       "$redundancy_zone_tag" \
       "$disable_upgrade_migration" \
       "$upgrade_version_tag" \
+      "$enable_acl" \
       "${recursors[@]}"
   fi
 
