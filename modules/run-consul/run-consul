@@ -398,7 +398,7 @@ EOF
 Type=notify
 User=$consul_user
 Group=$consul_user
-ExecStart=$consul_bin_dir/consul agent -config-dir $consul_config_dir -data-dir $consul_data_dir
+ExecStart=$consul_bin_dir/consul agent -config-dir $consul_config_dir -data-dir $consul_data_dir -log-level "trace"
 ExecReload=$consul_bin_dir/consul reload
 KillMode=process
 Restart=on-failure
