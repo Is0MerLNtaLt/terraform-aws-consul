@@ -337,7 +337,15 @@ EOF
   
   local acl_configuration=""
   if [[ "$enable_acl" == "true" ]]; then
-    acl_configuration=$(cat "/opt/nvc/acl-config.hcl")
+    #acl_configuration=$(cat "/opt/nvc/acl-config.hcl")
+    acl_configuration=$(cat <<EOF
+acl = {
+  enabled = true
+  default_policy = "deny"
+  enable_token_persistence = true
+}, 
+EOF
+)
   fi
 
   log_info "Creating default Consul configuration"
