@@ -235,9 +235,10 @@ function generate_consul_config {
   local -r disable_upgrade_migration="${18}"
   local -r upgrade_version_tag=${19}
   local -r enable_acl=${20}
+  local -r acl_config_path=${21}
   local -r config_path="$config_dir/$CONSUL_CONFIG_FILE"
 
-  shift 20
+  shift 21
   local -r recursors=("$@")
 
   local instance_id=""
@@ -337,7 +338,7 @@ EOF
   
   local acl_configuration=""
   if [[ "$enable_acl" == "true" ]]; then
-    acl_configuration=$(cat "/opt/nvc/consul/acl_config.txt")
+    acl_configuration=$(cat $acl_config_path)
   fi
 
   log_info "Creating default Consul configuration"
@@ -460,6 +461,7 @@ function run {
   local enable_rpc_encryption="false"
   local enable_acl="false"
   local ca_path=""
+  local acl_config_path=""
   local cert_file_path=""
   local key_file_path=""
   local environment=()
@@ -572,8 +574,8 @@ function run {
         enable_acl="true"
         ;;
       --enable-grpc)
-      enable_grpc="true"
-      ;;
+        enable_grpc="true"
+        ;;
       --gossip-encryption-key)
         assert_not_empty "$key" "$2"
         gossip_encryption_key="$2"
@@ -604,6 +606,10 @@ function run {
         ;;
       --skip-consul-config)
         skip_consul_config="true"
+        ;;
+      --acl-config-path)
+        acl_config_path="$2"
+        shift
         ;;
       --recursor)
         assert_not_empty "$key" "$2"
@@ -688,6 +694,7 @@ function run {
       "$disable_upgrade_migration" \
       "$upgrade_version_tag" \
       "$enable_acl" \
+      "$acl_config_path" \
       "${recursors[@]}"
   fi
 
