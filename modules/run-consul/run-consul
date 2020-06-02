@@ -237,7 +237,7 @@ function generate_consul_config {
   local -r enable_acl=${20}
   local -r config_path="$config_dir/$CONSUL_CONFIG_FILE"
 
-  shift 19
+  shift 20
   local -r recursors=("$@")
 
   local instance_id=""
