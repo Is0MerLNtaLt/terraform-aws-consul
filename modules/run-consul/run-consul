@@ -330,7 +330,8 @@ EOF
     log_info "Creating grpc configuration"
     grpc_configuration=$(cat <<EOF
 "ports": {
-  "grpc": 8502
+  "grpc": 8502,
+  "https": 8501
 },
 EOF
 )
