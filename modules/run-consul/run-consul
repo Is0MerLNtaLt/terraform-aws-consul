@@ -360,6 +360,7 @@ EOF
   $connect_configuration
   $grpc_configuration
   $acl_configuration
+  "verify_incoming_https": false,
   "ui": $ui
 }
 EOF
